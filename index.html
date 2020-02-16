@@ -16,11 +16,13 @@
   <div id="contents">
 <!--     カメラ映像 -->
     <video id="camera" width="640" height="480"></video>
-    <video id="camera2" width="640" height="480"></video>
 <!--     <canvas id="picture" width="300" height="200"></canvas> -->
-    <botton type="button" id="btn-toggle">
-      <img src="icon/retweet-solid.svg" width="64" height="64">
+    <botton type="button" id="btn-toggle-reverse">
+      <img src="icon/retweet-solid.svg" width="64" height="64" alt="反転">
     </button>
+    <botton type="button" id="btn-toggle-snap">
+      <img src="icon/retweet-solid.svg" width="64" height="64" alt="撮影">
+    </button>    
   </div>
 
 <audio id="se" preload="auto">
@@ -119,7 +121,29 @@ function adjustCameraSize(video, longside, shortside){
     video.style.height = longside;
   }
 }
-  
+  $("#snap").click(function() {
+          if (localMediaStream) {
+                  var canvas = document.getElementById('canvas');
+                  //canvasの描画モードを2sに
+                  var ctx = canvas.getContext('2d');
+                  var img = document.getElementById('img');
+
+                  //videoの縦幅横幅を取得
+                  var w = video.offsetWidth;
+                  var h = video.offsetHeight;
+
+                  //同じサイズをcanvasに指定
+                  canvas.setAttribute("width", w);
+                  canvas.setAttribute("height", h);
+
+                  //canvasにコピー
+                  ctx.drawImage(video, 0, 0, w, h);
+                  //imgにpng形式で書き出し
+                  img.src = canvas.toDataURL('image/png');
+          }
+  });
+});
+//-->
 
   
 </script>
