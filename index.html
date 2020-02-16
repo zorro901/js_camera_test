@@ -13,115 +13,42 @@
 
 <h1>HTML5カメラ</h1>
 
-<video id="camera" width="640" height="480"></video>
-<canvas id="picture" width="640" height="480"></canvas>
+<video id="camera" width="300" height="200"></video>
+<canvas id="picture" width="300" height="200"></canvas>
 <form>
   <button type="button" id="shutter">シャッター</button>
 </form>
 <form>
   <button type="button" id="reverse">反転</button>
 </form>
+
 <audio id="se" preload="auto">
   <source src="camera-shutter1.mp3" type="audio/mp3">
 </audio>
 
 <script>
-//---------------------------------------------
-// グローバル変数
-//---------------------------------------------
-  /** カメラ設定 */
-  const CONSTRAINTS = {
-  audio: false,
-  video: {
-    width: 640,
-    height: 480,
-    facingMode: null  // どのカメラを利用するか
 
-    // facingModeには最終的に以下のいずれかの値を入れる
-    //   facingMode: "user"                    // フロントカメラを利用する
-    //   facingMode: { exact: "environment" }  // リアカメラを利用する
-  }
-};
-// 現在のStream
-var curSTREAM = null;
-  
+  /** カメラ設定 */
+  const constraints = {
+    audio: false,
+    video: {
+      width: 300,
+      height: 200,
+      facingMode: "user"   // フロントカメラを利用する
+      // facingMode: { exact: "environment" }  // リアカメラを利用する場合
+    }
+  };
+
 window.onload = () => {
   const video  = document.querySelector("#camera");
   const canvas = document.querySelector("#picture");
   const se     = document.querySelector('#se');
-  let useFront = true;     // フロントカメラ:true, バックカメラ:false
 
-  // カメラと同期開始
-  syncCamera(video, useFront);
-  useFront = !useFront;         // boolean値を反転
-  
-    //-------------------------------
-    // [event] 切り替えボタン押下
-    //-------------------------------
-    document.querySelector("#reverse").addEventListener("click", ()=>{
-      syncCamera(video, useFront);
-      useFront = !useFront;      // boolean値を反転
-    });
-  };
-  
-  /**
- * カメラを<video>と同期
- *
- * @param {object} video
- * @param {boolean} [is_front=true]
- */
-function syncCamera(video, is_front=true){
-  // 前後カメラの設定
-  CONSTRAINTS.video.facingMode = (is_front)?  "user":{ exact: "environment" };
-
-  // すでにカメラと接続していたら停止
-  if( curSTREAM !== null ){
-    curSTREAM.getVideoTracks().forEach( (camera) => {
-      camera.stop();
-    });
-  }
-
-  // カメラと接続する
-  navigator.mediaDevices.getUserMedia(CONSTRAINTS)
-    .then( (stream) => {
-      curSTREAM = stream;   // 前後の切り替え用に保持
-
-      // <video>とStremaを接続
-      video.srcObject = stream;
-      video.onloadedmetadata = (e) => {
-        video.play();
-      };
-    })
-    .catch( (err) => {
-      console.log(`${err.name}: ${err.message}`);
-      alert("カメラとの接続時にエラーが発生しました");
-    });
-}
-
-/**
- * 解像度に合わせて<video>サイズを調整する
- *
- * @param {object}  video
- * @param {integer} longside   長辺のピクセル数
- * @param {integer} shortside  短辺のピクセル数
- **/
-function adjustCameraSize(video, longside, shortside){
-  if( window.innerWidth < window.innerHeight ){
-    // getUserMediaに食わせる値
-    CONSTRAINTS.video.width  = shortside;
-    CONSTRAINTS.video.height = longside;
-    // videoタグのサイズ
-    video.style.width  = shortside;
-    video.style.height = longside;
-  }
-}
-  
-
-
+ let useFront = true; 
   /**
    * カメラを<video>と同期
    */
-  navigator.mediaDevices.getUserMedia(CONSTRAINTS)
+  navigator.mediaDevices.getUserMedia(constraints)
   .then( (stream) => {
     video.srcObject = stream;
     video.onloadedmetadata = (e) => {
@@ -148,6 +75,42 @@ function adjustCameraSize(video, longside, shortside){
     // canvasに画像を貼り付ける
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   });
+
+   //反転ボタン
+   document.querySelector("#reverse").addEventListener("click", () => {
+    syncCamera(video, useFront);
+    useFront = !useFront;      // boolean値を反転
+  });
+
+
+function syncCamera(video, is_front=true){
+  // 前後カメラの設定
+  CONSTRAINTS.video.facingMode = (is_front)?  "user":{ exact: "environment" };
+
+  // すでにカメラと接続していたら停止
+  if( video.srcObject !== null ){
+    video.srcObject.getVideoTracks().forEach( (camera) => {
+      camera.stop();
+    });
+  }
+
+  // カメラと接続する
+  navigator.mediaDevices.getUserMedia(CONSTRAINTS)
+    .then( (stream) => {
+      video.srcObject = stream;   // 前後の切り替え用に保持
+
+      // <video>とStremaを接続
+      video.srcObject = stream;
+      video.onloadedmetadata = (e) => {
+        video.play();
+      };
+    })
+    .catch( (err) => {
+      console.log(`${err.name}: ${err.message}`);
+      alert("カメラとの接続時にエラーが発生しました");
+    });
+}
+
 };
 </script>
 </body>
