@@ -78,7 +78,12 @@ window.onload = () => {
     useFront = !useFront;      // boolean値を反転
   });
 
-
+/**
+ * カメラを<video>と同期
+ *
+ * @param {object} video
+ * @param {boolean} [is_front=true]
+ */
 function syncCamera(video, is_front=true){
   // 前後カメラの設定
   CONSTRAINTS.video.facingMode = (is_front)?  "user":{ exact: "environment" };
