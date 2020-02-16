@@ -18,7 +18,9 @@
 <form>
   <button type="button" id="shutter">シャッター</button>
 </form>
-
+<form>
+  <button type="button" id="reverse">反転</button>
+</form>
 <audio id="se" preload="auto">
   <source src="camera-shutter1.mp3" type="audio/mp3">
 </audio>
@@ -38,6 +40,17 @@ window.onload = () => {
       facingMode: "user"   // フロントカメラを利用する
       // facingMode: { exact: "environment" }  // リアカメラを利用する場合
     }
+  };
+  document.querySelector("#reverse").addEventListener("click", () => {
+    const constraints = {
+      audio: false,
+      video: {
+        width: 300,
+        height: 200,
+        facingMode: "environment"   // フロントカメラを利用する
+        // facingMode: { exact: "environment" }  // リアカメラを利用する場合
+      }
+    };
   };
 
   /**
