@@ -26,6 +26,25 @@
 </audio>
 
 <script>
+//---------------------------------------------
+// グローバル変数
+//---------------------------------------------
+  /** カメラ設定 */
+  const CONSTRAINTS = {
+  audio: false,
+  video: {
+    width: 640,
+    height: 480,
+    facingMode: null  // どのカメラを利用するか
+
+    // facingModeには最終的に以下のいずれかの値を入れる
+    //   facingMode: "user"                    // フロントカメラを利用する
+    //   facingMode: { exact: "environment" }  // リアカメラを利用する
+  }
+};
+// 現在のStream
+var curSTREAM = null;
+  
 window.onload = () => {
   const video  = document.querySelector("#camera");
   const canvas = document.querySelector("#picture");
@@ -97,21 +116,12 @@ function adjustCameraSize(video, longside, shortside){
   }
 }
   
-  /** カメラ設定 */
-  const constraints = {
-    audio: false,
-    video: {
-      width: 300,
-      height: 200,
-      facingMode: "user"   // フロントカメラを利用する
-      // facingMode: { exact: "environment" }  // リアカメラを利用する場合
-    }
-  };
+
 
   /**
    * カメラを<video>と同期
    */
-  navigator.mediaDevices.getUserMedia(constraints)
+  navigator.mediaDevices.getUserMedia(CONSTRAINTS)
   .then( (stream) => {
     video.srcObject = stream;
     video.onloadedmetadata = (e) => {
