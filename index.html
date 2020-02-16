@@ -29,7 +29,7 @@
 <script>
 
   /** カメラ設定 */
-  const constraints = {
+  const CONSTRAINTS = {
     audio: false,
     video: {
       width: 300,
@@ -38,6 +38,8 @@
       // facingMode: { exact: "environment" }  // リアカメラを利用する場合
     }
   };
+// 現在のStream
+var curSTREAM = null;
 
 window.onload = () => {
   const video  = document.querySelector("#camera");
@@ -45,19 +47,13 @@ window.onload = () => {
   const se     = document.querySelector('#se');
 
  let useFront = true; 
-  /**
-   * カメラを<video>と同期
-   */
-  navigator.mediaDevices.getUserMedia(constraints)
-  .then( (stream) => {
-    video.srcObject = stream;
-    video.onloadedmetadata = (e) => {
-      video.play();
-    };
-  })
-  .catch( (err) => {
-    console.log(err.name + ": " + err.message);
-  });
+
+  // 縦横の解像度を調整
+  adjustCameraSize(video, 640, 480);
+
+  // カメラと同期開始
+  syncCamera(video, useFront);
+  useFront = !useFront;         // boolean値を反転
 
   /**
    * シャッターボタン
@@ -88,8 +84,8 @@ function syncCamera(video, is_front=true){
   CONSTRAINTS.video.facingMode = (is_front)?  "user":{ exact: "environment" };
 
   // すでにカメラと接続していたら停止
-  if( video.srcObject !== null ){
-    video.srcObject.getVideoTracks().forEach( (camera) => {
+  if( curSTREAM !== null ){
+    curSTREAM.getVideoTracks().forEach( (camera) => {
       camera.stop();
     });
   }
@@ -97,7 +93,7 @@ function syncCamera(video, is_front=true){
   // カメラと接続する
   navigator.mediaDevices.getUserMedia(CONSTRAINTS)
     .then( (stream) => {
-      video.srcObject = stream;   // 前後の切り替え用に保持
+      curSTREAM = stream;   // 前後の切り替え用に保持
 
       // <video>とStremaを接続
       video.srcObject = stream;
@@ -110,6 +106,26 @@ function syncCamera(video, is_front=true){
       alert("カメラとの接続時にエラーが発生しました");
     });
 }
+
+
+/**
+ * 解像度に合わせて<video>サイズを調整する
+ *
+ * @param {object}  video
+ * @param {integer} longside   長辺のピクセル数
+ * @param {integer} shortside  短辺のピクセル数
+ **/
+function adjustCameraSize(video, longside, shortside){
+  if( window.innerWidth < window.innerHeight ){
+    // getUserMediaに食わせる値
+    CONSTRAINTS.video.width  = shortside;
+    CONSTRAINTS.video.height = longside;
+    // videoタグのサイズ
+    video.style.width  = shortside;
+    video.style.height = longside;
+  }
+}
+
 
 };
 </script>
