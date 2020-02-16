@@ -16,10 +16,10 @@
 <video id="camera" width="300" height="200"></video>
 <canvas id="picture" width="300" height="200"></canvas>
 <form>
-  <button type="button" id="frontcam">インカメラ</button>
+  <button type="button" id="incam">インカメラ</button>
 </form>
 <form>
-  <button type="button" id="backcam">アウトカメラ</button>
+  <button type="button" id="outcam">アウトカメラ</button>
 </form>
 <form>
   <button type="button" id="reverse">反転</button>
@@ -61,7 +61,7 @@ window.onload = () => {
     /**
      * シャッターボタン
      */
-    document.querySelector("#frontcam").addEventListener("click", () => {
+    document.querySelector("#incam").addEventListener("click", () => {
     syncCamera(video, true);
     const ctx = canvas.getContext("2d");
 
@@ -76,7 +76,7 @@ window.onload = () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   });
 
-      document.querySelector("#backcam").addEventListener("click", () => {
+      document.querySelector("#outcam").addEventListener("click", () => {
     syncCamera(video, false);
     const ctx = canvas.getContext("2d");
 
@@ -94,7 +94,7 @@ window.onload = () => {
    //反転ボタン
    document.querySelector("#reverse").addEventListener("click", () => {
     syncCamera(video, useFront);
-    useFront = !useFront;      // boolean値を反転
+//     useFront = !useFront;      // boolean値を反転
      
     const ctx = canvas.getContext("2d");
 
