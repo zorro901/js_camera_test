@@ -16,6 +16,7 @@
   <div id="contents">
 <!--     カメラ映像 -->
     <video id="camera" width="640" height="480"></video>
+    <video id="camera2" width="640" height="480"></video>
 <!--     <canvas id="picture" width="300" height="200"></canvas> -->
     <botton type="button" id="btn-toggle-reverse">
       <img src="icon/retweet-solid.svg" width="64" height="64" alt="反転">
@@ -24,6 +25,7 @@
       <img src="icon/retweet-solid.svg" width="64" height="64" alt="撮影">
     </button>    
   </div>
+  <div style="display:none"><canvas id="canvas"></canvas></div>
 
 <audio id="se" preload="auto">
   <source src="camera-shutter1.mp3" type="audio/mp3">
@@ -52,7 +54,7 @@ var curSTREAM = null;
 window.onload = () => {
   const video = document.querySelector("#camera");
   let useFront = true;     // フロントカメラ:true, バックカメラ:false
-  const video = document.querySelector("#camera2");
+  const video2 = document.querySelector("#camera2");
   let useFront = false;     // フロントカメラ:true, バックカメラ:false
   // 縦横の解像度を調整
   adjustCameraSize(video, 640, 480);
