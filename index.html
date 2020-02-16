@@ -16,7 +16,10 @@
 <video id="camera" width="300" height="200"></video>
 <canvas id="picture" width="300" height="200"></canvas>
 <form>
-  <button type="button" id="shutter">シャッター</button>
+  <button type="button" id="frontcam">インカメラ</button>
+</form>
+<form>
+  <button type="button" id="backcam">アウトカメラ</button>
 </form>
 <form>
   <button type="button" id="reverse">反転</button>
@@ -55,10 +58,11 @@ window.onload = () => {
   syncCamera(video, useFront);
   useFront = !useFront;         // boolean値を反転
 
-  /**
-   * シャッターボタン
-   */
-   document.querySelector("#shutter").addEventListener("click", () => {
+    /**
+     * シャッターボタン
+     */
+    document.querySelector("#frontcam").addEventListener("click", () => {
+    syncCamera(video, true);
     const ctx = canvas.getContext("2d");
 
     // 演出的な目的で一度映像を止めてSEを再生する
@@ -72,6 +76,21 @@ window.onload = () => {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   });
 
+      document.querySelector("#backcam").addEventListener("click", () => {
+    syncCamera(video, false);
+    const ctx = canvas.getContext("2d");
+
+    // 演出的な目的で一度映像を止めてSEを再生する
+    video.pause();  // 映像を停止
+    se.play();      // シャッター音
+    setTimeout( () => {
+      video.play();    // 0.5秒後にカメラ再開
+    }, 500);
+
+    // canvasに画像を貼り付ける
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  });
+  
    //反転ボタン
    document.querySelector("#reverse").addEventListener("click", () => {
     syncCamera(video, useFront);
