@@ -1,37 +1,31 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf8">
   <title>Camera Test</title>
-  <style>
-  canvas, video{
-    border: 1px solid gray;
-  }
-  </style>
+  <link rel="stylesheet" href="style.css" type="text/css" media="all">
 </head>
 <body>
 
-<h1>HTML5カメラ</h1>
+<div id="contents">
+  <!-- カメラ映像 -->
+  <video id="camera" width="640" height="480"></video>
 
-  <div id="contents">
-<!--     カメラ映像 -->
-    <video id="camera" width="640" height="480"></video>
-<!--     <video id="camera2" width="640" height="480"></video> -->
-<!--     <canvas id="picture" width="300" height="200"></canvas> -->
-    <botton type="button" id="btn-toggle-reverse">
-      <img src="icon/retweet-solid.svg" width="64" height="64" alt="反転">
-    </button>
-    <botton type="button" id="btn-toggle-snap">
-      <img src="icon/retweet-solid.svg" width="64" height="64" alt="撮影">
-    </button>    
-  </div>
-  <div style="display:none"><canvas id="canvas"></canvas></div>
-
-<audio id="se" preload="auto">
-  <source src="camera-shutter1.mp3" type="audio/mp3">
-</audio>
+  <!-- 切り替えボタン -->
+  <button type="button" id="btn-toggle">
+    <img src="icon/retweet-solid.svg" width="64" height="64">
+  </button>
+<!--   シャッター -->
+  <form>
+  <button type="button" id="shutter">シャッター</button>
+</form>
+</div>
 
 <script>
+//---------------------------------------------
+// グローバル変数
+//---------------------------------------------
+// カメラのデフォルト設定
 var CONSTRAINTS = {
   audio: false,
   video: {
@@ -47,15 +41,14 @@ var CONSTRAINTS = {
 
 // 現在のStream
 var curSTREAM = null;
-  
+
 //---------------------------------------------
 // [event] ページ読み込み完了
 //---------------------------------------------
 window.onload = () => {
   const video = document.querySelector("#camera");
   let useFront = true;     // フロントカメラ:true, バックカメラ:false
-//   const video2 = document.querySelector("#camera2");
-//   let useFront2 = false;     // フロントカメラ:true, バックカメラ:false
+
   // 縦横の解像度を調整
   adjustCameraSize(video, 640, 480);
 
@@ -66,12 +59,12 @@ window.onload = () => {
   //-------------------------------
   // [event] 切り替えボタン押下
   //-------------------------------
-  document.querySelector("#btn-toggle-reverse").addEventListener("click", ()=>{
+  document.querySelector("#btn-toggle").addEventListener("click", ()=>{
     syncCamera(video, useFront);
     useFront = !useFront;      // boolean値を反転
   });
 };
-  
+
 /**
  * カメラを<video>と同期
  *
@@ -123,30 +116,23 @@ function adjustCameraSize(video, longside, shortside){
     video.style.height = longside;
   }
 }
-  $("#snap").click(function() {
-          if (localMediaStream) {
-                  var canvas = document.getElementById('canvas');
-                  //canvasの描画モードを2sに
-                  var ctx = canvas.getContext('2d');
-                  var img = document.getElementById('img');
+    /**
+   * シャッターボタン
+   */
+   document.querySelector("#shutter").addEventListener("click", () => {
+    const ctx = canvas.getContext("2d");
 
-                  //videoの縦幅横幅を取得
-                  var w = video.offsetWidth;
-                  var h = video.offsetHeight;
+    // 演出的な目的で一度映像を止めてSEを再生する
+    video.pause();  // 映像を停止
+    se.play();      // シャッター音
+    setTimeout( () => {
+      video.play();    // 0.5秒後にカメラ再開
+    }, 500);
 
-                  //同じサイズをcanvasに指定
-                  canvas.setAttribute("width", w);
-                  canvas.setAttribute("height", h);
-
-                  //canvasにコピー
-                  ctx.drawImage(video, 0, 0, w, h);
-                  //imgにpng形式で書き出し
-                  img.src = canvas.toDataURL('image/png');
-          }
+    // canvasに画像を貼り付ける
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   });
-});
-
-  
+};
 </script>
 </body>
 </html>
